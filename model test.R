@@ -2,11 +2,12 @@ library(frequency)
 library(Hmisc)
 library(Metrics)
 library(randomForest)
-library(lattice)
-library(caret)
+library(ggplot2)
+library(tidyverse)
+
 
 ############## import data #########
-Data <- read.csv("C:/Users/rxm1279/Desktop/Model Test Data.csv")
+Data <- read.csv("/Users/maruixuan/Downloads/Model Test Data.csv")
 
 
 ############## check missing values ################
@@ -49,6 +50,7 @@ hist(Data$var_8)
 hist(Data$var_9)
 hist(Data$var_10)
 
+
 boxplot(Data$y)
 boxplot(Data$var_1)
 boxplot(Data$var_2)
@@ -61,11 +63,6 @@ boxplot(Data$var_8)
 boxplot(Data$var_9)
 boxplot(Data$var_10)
 
-par(mfrow = c(2,2))
-for (i in 1:4){
-  boxplot(Data[,i])
-} 
-
 
 ############# bivariate analysis #############
 
@@ -74,17 +71,38 @@ for (i in 1:4){
 library(Hmisc)
 rcorr(as.matrix(Data))
 
-# look at if there is linear relationship between dependent variable y and all independent variable x
-scatter.smooth(Data$var_1, Data$y) 
-scatter.smooth(Data$var_2, Data$y) 
-scatter.smooth(Data$var_3, Data$y) 
-scatter.smooth(Data$var_4, Data$y) 
-scatter.smooth(Data$var_5, Data$y) 
-scatter.smooth(Data$var_6, Data$y) 
-scatter.smooth(Data$var_7, Data$y) 
-scatter.smooth(Data$var_8, Data$y) 
-scatter.smooth(Data$var_9, Data$y) 
-scatter.smooth(Data$var_10, Data$y) 
+# look at if there is linear relationship between dependent variable y and all independent variables x
+
+sca1 <- ggplot(Data, aes(x = var_1, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca1)
+
+sca2 <- ggplot(Data, aes(x = var_2, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca2)
+
+sca3 <- ggplot(Data, aes(x = var_3, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca3)
+
+sca4 <- ggplot(Data, aes(x = var_4, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca4)
+
+sca5 <- ggplot(Data, aes(x = var_5, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca5)
+
+sca6 <- ggplot(Data, aes(x = var_6, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca6)
+
+sca7 <- ggplot(Data, aes(x = var_7, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca7)
+
+sca8 <- ggplot(Data, aes(x = var_8, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca8)
+
+sca9 <- ggplot(Data, aes(x = var_9, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca9)
+
+sca10 <- ggplot(Data, aes(x = var_10, y = y)) + geom_point() + geom_smooth(method = lm, se = TRUE)
+plot(sca10)
+
 
 
 ############ training / testing ###############
@@ -100,9 +118,9 @@ train <- Data[train_ind, ]
 test <- Data[-train_ind, ]
 
 
-################ modeling ##############
+################ Multiple Linear Regression ##############
 
-# build an initual linear regression model based on train dataset 
+# build an initial linear regression model based on train dataset 
 LRmodel <- lm(y ~ ., data = train) # . is include all the variables
 summary(LRmodel)
 
@@ -119,11 +137,8 @@ summary(fitMod)
 
 LRpred <- predict(fitMod, test)
 
+# using MSE to check the model performance
 mse(test$y, LRpred)
-
-
-library(msm)
-model.diag.metrics <- augment(LRmodel)
 
 
 
@@ -133,8 +148,20 @@ par(mfrow = c(2,2))
 plot(fitMod)
 
 
-
+########### Random Forest ###################
+# build the random forest model based on train data
 RFmodel <- randomForest(y ~ ., data = train)
+RFmodel
+
+# make prediction for test data
 RFpred <- predict(RFmodel, test)
+
+# using MSE to check the model performance
 mse(test$y, RFpred)
-plot(RFmodel)
+
+# exploring which predictor is more important for estimation with graph
+as_tibble(importance(RFmodel))
+order(importance(RFmodel))
+
+varImpPlot(RFmodel)
+
