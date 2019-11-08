@@ -1,0 +1,32 @@
+---
+title: "Model Test for BHG"
+author: "Ruixuan Ma"
+date: "11/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+This is my predictive modeling test summary for Banker Healthcare Group including all the code, outputs and modeling strategies.
+
+### Importing data into R and checking the missing values
+
+After receiving the dataset, the first step is importing "model test data.csv" into R by using read.csv() function and checking to see is there any records contain the missing values. If so, remove the records wich contain the missing values. But in our case, there is no missing values in the dataset.
+
+```{r}
+Data <- read.csv("C:/Users/rxm1279/Desktop/Model Test Data.csv")
+
+Data[!complete.cases(Data), ]
+```
+
+## checking missing values
+
+
+```{r}
+p
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
